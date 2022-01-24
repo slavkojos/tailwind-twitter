@@ -5,7 +5,6 @@ export default function TweetActionButton({ number, hoverColor, icon, textHoverC
   return (
     <button className={`flex items-center rounded-full pr-2 text-gray-500 ${hoverColor} ${textHoverColor}`}>
       <TweetActionIcon icon={icon} hoverColor={hoverColor} />
-      {/* <Image alt="" src={`/assets/svgexport-${buttonNumber}.svg`} width="16" height="16" className="hover:fill-green" /> */}
       <span className="mx-2">{number}</span>
     </button>
   );

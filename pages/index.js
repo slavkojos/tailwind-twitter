@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import { signInWithOauth } from "../utils/supabase";
 
 export default function Landing() {
   return (
@@ -13,6 +14,7 @@ export default function Landing() {
         <h2 className="text-4xl my-2 font-bold">Join twitter today.</h2>
         <button
           type="button"
+          onClick={() => signInWithOauth("google")}
           className="w-1/2 my-2 py-2 px-4 flex justify-center items-center  bg-white hover:bg-gray-200 focus:ring-gray-200 focus:ring-offset-gray-200 text-black transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-3xl "
         >
           <svg width="20" height="20" fill="currentColor" className="mr-2" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
@@ -23,6 +25,7 @@ export default function Landing() {
 
         <button
           type="button"
+          onClick={() => signInWithOauth("github")}
           className="w-1/2 my-2 py-2 px-4 flex justify-center items-center  bg-white hover:bg-gray-200 focus:ring-gray-200 focus:ring-offset-gray-200 text-black transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-3xl "
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="mr-2" viewBox="0 0 1792 1792">
