@@ -14,6 +14,8 @@ export default function Landing() {
         <h2 className="text-4xl my-2 font-bold">Join twitter today.</h2>
         <OauthLoginButton provider="Google" />
         <OauthLoginButton provider="Github" />
+        <OauthLoginButton provider="Discord" />
+        <OauthLoginButton provider="Spotify" />
         <div className="flex flex-row items-center w-1/2">
           <hr className="w-full" />
           <p className="mx-2">or</p>

@@ -1,6 +1,8 @@
 import Spinner from "../public/assets/spinner.svg";
 import Google from "../public/assets/google.svg";
 import Github from "../public/assets/github.svg";
+import Discord from "../public/assets/Discord-Logo-Black.svg";
+import Spotify from "../public/assets/Spotify_Icon_RGB_Black.svg";
 import { signInWithOauth } from "../utils/supabase";
 import { useState } from "react";
 export default function OauthLoginButton({ provider }) {
@@ -10,6 +12,10 @@ export default function OauthLoginButton({ provider }) {
         return <Google className="mr-2" />;
       case "Github":
         return <Github className="mr-2" />;
+      case "Discord":
+        return <Discord className="mr-2" />;
+      case "Spotify":
+        return <Spotify className="mr-2" />;
     }
   };
   const [isLoading, setLoading] = useState(false);
@@ -17,7 +23,7 @@ export default function OauthLoginButton({ provider }) {
     <button
       type="button"
       onClick={() => {
-        signInWithOauth("google");
+        signInWithOauth(provider.toLowerCase());
         setLoading(true);
       }}
       className="w-1/2 my-2 py-2 px-4 flex justify-center items-center  bg-white hover:bg-gray-200 focus:ring-gray-200 focus:ring-offset-gray-200 text-black transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-3xl "
