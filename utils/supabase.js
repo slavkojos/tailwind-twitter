@@ -16,3 +16,19 @@ export async function signInWithOauth(provider) {
     }
   );
 }
+
+export async function signUp(email, password, username, name) {
+  const { user, session, error } = await supabase.auth.signUp(
+    { redirectTo: "http://localhost:3000/home" },
+    {
+      email: email,
+      password: password,
+    },
+    {
+      data: {
+        name: name,
+        username: username,
+      },
+    }
+  );
+}

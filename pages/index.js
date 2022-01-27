@@ -1,40 +1,49 @@
 import Head from "next/head";
 import Image from "next/image";
 import OauthLoginButton from "../components/OauthLoginButton";
+import SignUpModal from "../components/SignUpModal";
+import SignInModal from "../components/SignInModal";
+import { useState } from "react";
 
 export default function Landing() {
+  const [isSignUpOpen, setSignUpOpen] = useState(false);
+  const [isSignInOpen, setSignInOpen] = useState(false);
   return (
-    <div className="mx-auto bg-black h-screen flex justify-between items-stretch flex-col-reverse lg:flex-row">
-      <div className="bg-landing-image flex justify-center basis-3/5 w-full">
+    <div className="mx-auto flex h-screen flex-col-reverse items-stretch justify-between bg-black lg:flex-row">
+      <div className="flex w-full basis-3/5 justify-center bg-landing-image">
         <Image src="/assets/svgexport-3.svg" alt="" width="400" height="400" className="fill-white" />
       </div>
-      <div className="flex flex-col w-full bg-black pl-8 text-white items-start my-auto basis-2/5">
+      <div className="my-auto flex w-full basis-2/5 flex-col items-start bg-black pl-8 text-white">
         <Image src="/assets/svgexport-3.svg" alt="" width="50" height="50" />
-        <h2 className="text-6xl my-10 font-bold">Happening now</h2>
-        <h2 className="text-4xl my-2 font-bold">Join twitter today.</h2>
+        <h2 className="my-10 text-6xl font-bold">Happening now</h2>
+        <h2 className="my-2 text-4xl font-bold">Join twitter today.</h2>
         <OauthLoginButton provider="Google" />
         <OauthLoginButton provider="Github" />
         <OauthLoginButton provider="Discord" />
         <OauthLoginButton provider="Spotify" />
-        <div className="flex flex-row items-center w-1/2">
+        <div className="flex w-1/2 flex-row items-center">
           <hr className="w-full" />
           <p className="mx-2">or</p>
           <hr className="w-full" />
         </div>
         <button
           type="button"
-          className=" mb-8 w-1/2 my-2 py-2 px-4 flex justify-center items-center  bg-sky-500 hover:bg-sky-600 focus:ring-sky-600 focus:ring-offset-sky-600 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-3xl "
+          onClick={() => setSignUpOpen(true)}
+          className=" my-2 mb-8 flex w-1/2 items-center justify-center rounded-3xl bg-sky-500  py-2 px-4 text-center text-base font-semibold text-white shadow-md transition duration-200 ease-in hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2  focus:ring-offset-sky-600 "
         >
           Sign up with email
         </button>
         <h4 className="font-bold">Already have an account?</h4>
         <button
           type="button"
-          className="w-1/2 my-2 py-2 px-4 flex justify-center items-center  bg-transparent hover:bg-neutral-900 focus:ring-bg-neutral-900 focus:ring-offset-bg-neutral-900 text-sky-500 transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-3xl border-solid border border-gray-600 "
+          onClick={() => setSignInOpen(true)}
+          className="focus:ring-bg-neutral-900 focus:ring-offset-bg-neutral-900 my-2 flex w-1/2 items-center justify-center  rounded-3xl border border-solid border-gray-600 bg-transparent py-2 px-4 text-center text-base font-semibold text-sky-500 shadow-md transition duration-200 ease-in  hover:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-offset-2 "
         >
           Sign in
         </button>
       </div>
+      <SignUpModal isSignUpOpen={isSignUpOpen} setSignUpOpen={setSignUpOpen} />
+      <SignInModal isSignInOpen={isSignInOpen} setSignInOpen={setSignInOpen} />
     </div>
   );
 }
