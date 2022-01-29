@@ -3,9 +3,25 @@ import Google from "../public/assets/google.svg";
 import Github from "../public/assets/github.svg";
 import Discord from "../public/assets/Discord-Logo-Black.svg";
 import Spotify from "../public/assets/Spotify_Icon_RGB_Black.svg";
-import { signInWithOauth } from "../utils/supabase";
+import { supabase } from "../utils/supabase";
 import { useState } from "react";
+import { useRouter } from "next/router";
 export default function OauthLoginButton({ provider }) {
+  const router = useRouter();
+  async function signInWithOauth(provider) {
+    try {
+      const { user, session, error } = await supabase.auth.signIn(
+        {
+          provider: provider,
+        },
+        { redirectTo: "http://localhost:3000/home" }
+      );
+      console.log("error: ", error);
+      if (error) throw error;
+    } catch (error) {
+      alert(error.error_description || error.message);
+    }
+  }
   const chooseProvider = () => {
     switch (provider) {
       case "Google":
@@ -26,12 +42,12 @@ export default function OauthLoginButton({ provider }) {
         signInWithOauth(provider.toLowerCase());
         setLoading(true);
       }}
-      className="w-1/2 my-2 py-2 px-4 flex justify-center items-center  bg-white hover:bg-gray-200 focus:ring-gray-200 focus:ring-offset-gray-200 text-black transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-3xl "
+      className="my-2 flex w-1/2 items-center justify-center rounded-3xl bg-white  py-2 px-4 text-center text-base font-semibold text-black shadow-md transition duration-200 ease-in hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2  focus:ring-offset-gray-200 "
     >
       {isLoading ? (
         <Spinner className="mx-2 animate-spin" />
       ) : (
-        <div className="flex justify-center items-center">
+        <div className="flex items-center justify-center">
           {chooseProvider()}
           {`Sign in with ${provider}`}
         </div>
