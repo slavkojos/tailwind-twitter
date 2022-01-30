@@ -3,24 +3,20 @@ import Head from "next/head";
 import Navigation from "../components/Navigation";
 import ThirdColumn from "../components/ThirdColumn";
 import MainTimelineColumn from "../components/MainTimelineColumn";
-import { supabase } from "../utils/supabase";
+import { supabase, checkIfProfileExists, addNewProfile } from "../utils/supabase";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 
-export default function Home() {
-  const [loggedInUser, setLoggedInUser] = useState(null);
+export default function Home({ session }) {
+  const [loggedInUser, setLoggedInUser] = useState();
   const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [session, setSession] = useState(null);
+
   useEffect(() => {
     getLoggedInUser();
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // useEffect(() => {
-  //   router.push("/home");
-  //   getLoggedInUser();
-  // }, []);
+
   async function getLoggedInUser() {
     const { data, error } = await supabase.auth.getSessionFromUrl();
     const session = data || supabase.auth.session();
@@ -29,7 +25,12 @@ export default function Home() {
       router.push("/");
     } else {
       console.log(session);
-      setLoggedInUser(session);
+      setLoggedInUser(session.user);
+      const existingProfile = await checkIfProfileExists(session.user);
+      if (existingProfile.length === 0) {
+        console.log("adding new profile");
+        addNewProfile(session.user);
+      }
     }
   }
   return (
@@ -39,7 +40,8 @@ export default function Home() {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Navigation className="" />
-      <MainTimelineColumn className="" />
+      {loggedInUser && <MainTimelineColumn className="" user={loggedInUser} />}
+
       <div className="col-span-3 flex h-screen flex-col bg-black p-3 px-4">
         <div className="relative mb-4">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -56,7 +58,7 @@ export default function Home() {
             placeholder="Search Twitter"
           />
         </div>
-        <ThirdColumn className="" />
+        {loggedInUser && <ThirdColumn className="" user={loggedInUser} />}
       </div>
     </div>
   );

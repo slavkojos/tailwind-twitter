@@ -15,20 +15,60 @@ export async function signUp(email, password, username, name) {
       },
       {
         data: {
+          email: email,
           name: name,
           username: username,
+          avatar_url: "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png",
         },
       }
     );
     if (error) {
       throw error;
     }
+    addNewProfile(user);
   } catch (error) {
     alert(error.error_description || error.message);
   }
 }
 
-export async function checkIfProfileExists(user_id) {
-  const { data: profiles, error } = await supabase.from("profiles").select("*").in("id", user_id);
-  return profiles;
+export async function signInWithOauth(provider) {
+  try {
+    const { user, session, error } = await supabase.auth.signIn(
+      {
+        provider: provider,
+      },
+      { redirectTo: "http://localhost:3000/home" }
+    );
+    console.log("error: ", error);
+    if (error) throw error;
+  } catch (error) {
+    alert(error.error_description || error.message);
+  }
+}
+
+export async function checkIfProfileExists(user) {
+  try {
+    let { data: profiles, error } = await supabase.from("profiles").select("*").eq("id", user.id);
+    if (error) throw error;
+    return profiles;
+  } catch (error) {
+    console.error(error.error_description || error.message);
+  }
+}
+
+export async function addNewProfile(user) {
+  try {
+    const { data, error } = await supabase.from("profiles").insert([
+      {
+        id: user.id,
+        avatar: user.user_metadata.avatar_url || "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png",
+        email: user.user_metadata.email,
+        display_name: user.user_metadata.name,
+        username: user.user_metadata.provider_id || user.user_metadata.username,
+      },
+    ]);
+    if (error) throw error;
+  } catch (error) {
+    console.error(error.error_description || error.message);
+  }
 }

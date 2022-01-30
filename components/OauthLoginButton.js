@@ -3,25 +3,12 @@ import Google from "../public/assets/google.svg";
 import Github from "../public/assets/github.svg";
 import Discord from "../public/assets/Discord-Logo-Black.svg";
 import Spotify from "../public/assets/Spotify_Icon_RGB_Black.svg";
-import { supabase } from "../utils/supabase";
+import { supabase, signInWithOauth } from "../utils/supabase";
 import { useState } from "react";
 import { useRouter } from "next/router";
 export default function OauthLoginButton({ provider }) {
   const router = useRouter();
-  async function signInWithOauth(provider) {
-    try {
-      const { user, session, error } = await supabase.auth.signIn(
-        {
-          provider: provider,
-        },
-        { redirectTo: "http://localhost:3000/home" }
-      );
-      console.log("error: ", error);
-      if (error) throw error;
-    } catch (error) {
-      alert(error.error_description || error.message);
-    }
-  }
+
   const chooseProvider = () => {
     switch (provider) {
       case "Google":
