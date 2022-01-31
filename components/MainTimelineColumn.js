@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ActionButton from "../components/ActionButton";
-import TweetItem from "./TweetItem";
+import Timeline from "./Timeline";
+
 import { useState } from "react";
 import { supabase } from "../utils/supabase";
 export default function MainTimelineColumn({ user, session }) {
@@ -51,15 +52,7 @@ export default function MainTimelineColumn({ user, session }) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col overflow-auto">
-        <TweetItem />
-        <TweetItem />
-        <TweetItem />
-        <TweetItem />
-        <TweetItem />
-        <TweetItem />
-        <TweetItem />
-      </div>
+      <Timeline user={user} />
     </div>
   );
 }

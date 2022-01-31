@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { supabase } from "../utils/supabase";
+import Spinner from "../public/assets/spinner.svg";
 export default function UserSmall({ name, username, avatar, followStatus, userID, user }) {
   const [followingStatus, setFollowingStatus] = useState(false);
+  const [loading, setLoading] = useState(false);
   const followUser = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.from("followers").insert([{ user_id: user.id, following_id: userID }]);
       if (error) throw error;
       checkIfUserIsFollowing();
@@ -16,6 +19,7 @@ export default function UserSmall({ name, username, avatar, followStatus, userID
     try {
       console.log(user.id);
       console.log(userID);
+      setLoading(true);
       const { data, error } = await supabase.from("followers").delete().eq("user_id", user.id).eq("following_id", userID);
       console.log(data);
       console.log("trying to delete");
@@ -35,6 +39,7 @@ export default function UserSmall({ name, username, avatar, followStatus, userID
         setFollowingStatus(false);
       }
       if (error) throw error;
+      setLoading(false);
       return data;
     } catch (error) {
       console.error(error.error_description || error.message);
@@ -54,15 +59,17 @@ export default function UserSmall({ name, username, avatar, followStatus, userID
           <p className="truncate text-gray-500 ">{`@${username}`}</p>
         </div>
       </div>
-      {followingStatus ? (
-        <button onClick={() => unfollowUser()} className="rounded-full bg-slate-300 p-1 px-5 font-semibold text-black">
-          Unfollow
-        </button>
-      ) : (
-        <button onClick={() => followUser()} className="rounded-full bg-slate-300 p-1 px-5 font-semibold text-black">
-          Follow
-        </button>
-      )}
+      <div>
+        {followingStatus ? (
+          <button onClick={() => unfollowUser()} className="rounded-full bg-slate-300 p-1 px-5 font-semibold text-black">
+            {loading ? <Spinner className="mx-2 animate-spin" /> : "Following"}
+          </button>
+        ) : (
+          <button onClick={() => followUser()} className="rounded-full bg-slate-300 p-1 px-5 font-semibold text-black">
+            {loading ? <Spinner className="mx-2 animate-spin" /> : "Follow"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
