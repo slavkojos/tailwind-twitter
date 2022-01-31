@@ -23,7 +23,7 @@ export default function MainTimelineColumn({ user, session }) {
         </button>
       </div>
       <div className="my-4 flex items-center p-3">
-        <Image src={user.user_metadata.avatar_url} width="64" height="64" className="rounded-full" alt="" />
+        <Image src={user.avatar} width="64" height="64" className="rounded-full" alt="" />
         <div className="d-flex mx-4 w-full  flex-col">
           <input
             type="text"
@@ -53,6 +53,7 @@ export default function MainTimelineColumn({ user, session }) {
         </div>
       </div>
       <Timeline user={user} />
+      <p className="my-3 text-center text-gray-400">No more tweets to show</p>
     </div>
   );
 }

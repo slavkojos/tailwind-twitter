@@ -3,7 +3,7 @@ import Image from "next/image";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/router";
 
-export default function Navigation() {
+export default function Navigation({ user }) {
   const router = useRouter();
   async function logout() {
     const { error } = await supabase.auth.signOut();
@@ -13,7 +13,7 @@ export default function Navigation() {
     }
   }
   return (
-    <div className="bg-black col-span-3 h-screen flex flex-col items-start pl-4 pt-4 lg:pl-40 lg:pt-6 justify-between">
+    <div className="col-span-3 flex h-screen flex-col items-start justify-between bg-black pl-4 pt-4 lg:pl-40 lg:pt-6">
       <div className="w-full">
         <Image src="/assets/svgexport-3.svg" alt="" width="32" height="32" className="fill-white p-0" />
         <div className="my-4 w-full pr-4">
@@ -25,17 +25,17 @@ export default function Navigation() {
           <NavItem imageNumber={9} name="Lists" />
           <NavItem imageNumber={10} name="Profile" />
           <NavItem imageNumber={11} name="More" />
-          <button className="bg-sky-500 hover:bg-sky-600 transition ease-in duration-200 rounded-3xl p-2 py-3 mt-4 text-white w-full font-semibold">
+          <button className="mt-4 w-full rounded-3xl bg-sky-500 p-2 py-3 font-semibold text-white transition duration-200 ease-in hover:bg-sky-600">
             Tweet
           </button>
         </div>
       </div>
-      <div className="w-full flex justify-between items-center mb-4 pr-4 py-2 rounded-2xl hover:bg-slate-800 transition ease-in duration-200 ">
+      <div className="mb-4 flex w-full items-center justify-between rounded-2xl py-2 pr-4 transition duration-200 ease-in hover:bg-slate-800 ">
         <div className="flex w-full items-center">
-          <Image src="/assets/1490989105-twitter1.png" alt="" width="40" height="40" className="rounded-full" />
-          <div className="flex flex-col text-white mx-2">
-            <p>User</p>
-            <p className="text-gray-500 text-sm">@username</p>
+          <Image src={user.avatar} alt="" width="40" height="40" className="rounded-full" />
+          <div className="mx-2 flex w-2/3 flex-col text-white">
+            <p>{user.display_name}</p>
+            <p className="truncate text-sm text-gray-500">{`@${user.username}`}</p>
           </div>
         </div>
         <button className="flex rounded-full" onClick={logout}>

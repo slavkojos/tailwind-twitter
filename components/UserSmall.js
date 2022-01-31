@@ -54,8 +54,8 @@ export default function UserSmall({ name, username, avatar, followStatus, userID
         <div>
           <Image alt="" src={avatar} width="44" height="44" className="rounded-full" />
         </div>
-        <div className="ml-3 flex w-1/2 flex-col">
-          <p>{name}</p>
+        <div className="ml-3 flex w-2/3 flex-col">
+          <p className="truncate">{name}</p>
           <p className="truncate text-gray-500 ">{`@${username}`}</p>
         </div>
       </div>

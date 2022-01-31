@@ -2,6 +2,7 @@ import { supabase } from "../utils/supabase";
 import TweetItem from "./TweetItem";
 import { useEffect, useState } from "react";
 export default function Timeline({ user }) {
+  const [posts, setPosts] = useState();
   const fetchFollowers = async () => {
     try {
       //let { data: posts, error } = await supabase.from("posts").select("*").eq("user_id", user.id).orderBy("created_at", "desc");
@@ -9,11 +10,10 @@ export default function Timeline({ user }) {
 
       //if (error) throw new Error(error);
       console.log(followers);
-      if (followers.length > 0) {
-        followers.push({ following_id: user.id });
-        fetchPosts(followers);
-      }
+
       if (error) throw error;
+      followers.push({ following_id: user.id });
+      fetchPosts(followers);
     } catch (error) {
       console.error(error.error_description || error.message);
     }
@@ -29,8 +29,8 @@ export default function Timeline({ user }) {
           followers.map((follower) => follower.following_id)
         )
         .order("created_at", { ascending: false });
-      console.log(posts);
       if (error) throw error;
+      setPosts(posts);
     } catch (error) {
       console.error(error.error_description || error.message);
     }
@@ -38,15 +38,5 @@ export default function Timeline({ user }) {
   useEffect(() => {
     fetchFollowers();
   }, []);
-  return (
-    <div className="flex flex-col overflow-auto">
-      <TweetItem />
-      <TweetItem />
-      <TweetItem />
-      <TweetItem />
-      <TweetItem />
-      <TweetItem />
-      <TweetItem />
-    </div>
-  );
+  return <div className="flex flex-col overflow-auto">{posts && posts.map((post) => <TweetItem key={post.id} post={post} />)}</div>;
 }

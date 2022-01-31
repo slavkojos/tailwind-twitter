@@ -68,6 +68,7 @@ export async function addNewProfile(user) {
       },
     ]);
     if (error) throw error;
+    return data;
   } catch (error) {
     console.error(error.error_description || error.message);
   }

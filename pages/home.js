@@ -25,11 +25,14 @@ export default function Home({ session }) {
       router.push("/");
     } else {
       console.log(session);
-      setLoggedInUser(session.user);
+
       const existingProfile = await checkIfProfileExists(session.user);
+      console.log("existingProfile[0]", existingProfile[0]);
+      setLoggedInUser(existingProfile[0]);
       if (existingProfile.length === 0) {
         console.log("adding new profile");
-        addNewProfile(session.user);
+        const profile = addNewProfile(session.user);
+        setLoggedInUser(profile);
       }
     }
   }
@@ -39,7 +42,7 @@ export default function Home({ session }) {
         <title>Latest Tweets / Twitter</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Navigation className="" />
+      {loggedInUser && <Navigation className="" user={loggedInUser} />}
       {loggedInUser && <MainTimelineColumn className="" user={loggedInUser} />}
 
       <div className="col-span-3 flex h-screen flex-col bg-black p-3 px-4">
