@@ -23,20 +23,25 @@ export default function Timeline({ user }) {
     try {
       let { data: posts, error } = await supabase
         .from("posts")
-        .select("*")
+        .select("*,profile:posts_user_id_fkey!inner(*),likes:likes_post_id_fkey(*)")
         .in(
-          "user_id",
+          "posts.user_id",
           followers.map((follower) => follower.following_id)
         )
         .order("created_at", { ascending: false });
       if (error) throw error;
+      console.log("Posts", posts);
       setPosts(posts);
     } catch (error) {
-      console.error(error.error_description || error.message);
+      console.error(error);
     }
   };
   useEffect(() => {
     fetchFollowers();
   }, []);
-  return <div className="flex flex-col overflow-auto">{posts && posts.map((post) => <TweetItem key={post.id} post={post} />)}</div>;
+  return (
+    <div className="flex flex-col overflow-auto">
+      {posts && posts.map((post) => <TweetItem key={post.id} post={post} profile={post.profile} user={user} />)}
+    </div>
+  );
 }
