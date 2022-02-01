@@ -1,6 +1,6 @@
 module.exports = {
   images: {
-    domains: ["lh3.googleusercontent.com", "cdn.pixabay.com"],
+    domains: ["lh3.googleusercontent.com", "cdn.pixabay.com", "fhlkhextimngjhecwwrd.supabase.co"],
   },
   reactStrictMode: true,
   webpack(config) {

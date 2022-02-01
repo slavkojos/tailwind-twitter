@@ -22,6 +22,11 @@ export default function TweetItem({ post, profile, user }) {
           </button>
         </div>
         <p>{post.content}</p>
+        {post.media && (
+          <div className="">
+            <Image alt="" src={post.media} width={300} height={300} />
+          </div>
+        )}
         <div className="my-2 flex w-3/4 justify-between">
           <TweetActionButton buttonNumber={22} number={1} hoverColor="hover:stroke-sky-500" textHoverColor="hover:text-sky-500" icon="reply" />
           <TweetActionButton buttonNumber={23} number={2} hoverColor="hover:stroke-green-600" textHoverColor="hover:text-green-500" icon="retweet" />

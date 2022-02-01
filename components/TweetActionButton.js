@@ -8,7 +8,6 @@ export default function TweetActionButton({ number, hoverColor, icon, textHoverC
   const [liked, setLiked] = useState(false);
   const checkIfUserHasLiked = () => {
     if (likes) {
-      console.log("likes are here");
       const check = likes.some((like) => like.user_id === user.id);
       check ? setLiked(true) : setLiked(false);
     }

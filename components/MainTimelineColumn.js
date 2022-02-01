@@ -6,10 +6,41 @@ import { useState } from "react";
 import { supabase } from "../utils/supabase";
 export default function MainTimelineColumn({ user, session }) {
   const [tweet, setTweet] = useState("");
+  const [image, setImage] = useState();
+  const attachMediaToTweet = async () => {
+    const file = image;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+    try {
+      const { data, error } = await supabase.storage.from("media").upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { publicURL, error: urlError } = supabase.storage.from("media").getPublicUrl(filePath);
+      if (urlError) throw urlError;
+      return publicURL;
+    } catch (error) {
+      alert(error.error_description || error.message);
+    }
+  };
   const submitTweet = async (tweet, user) => {
     try {
-      const { data, error } = await supabase.from("posts").insert([{ content: tweet, user_id: user.id }]);
-      if (error) throw error;
+      if ((tweet && tweet.trim() !== "") || image) {
+        if (image && tweet) {
+          const mediaURL = await attachMediaToTweet();
+          const { data, error } = await supabase.from("posts").insert([{ content: tweet, user_id: user.id, media: mediaURL }]);
+          if (error) throw error;
+        } else if (image) {
+          const mediaURL = await attachMediaToTweet();
+          const { data, error } = await supabase.from("posts").insert([{ user_id: user.id, media: mediaURL }]);
+          if (error) throw error;
+        } else if (tweet) {
+          const { data, error } = await supabase.from("posts").insert([{ content: tweet, user_id: user.id }]);
+          if (error) throw error;
+        }
+      } else throw new Error("Please enter a tweet or upload an image.");
     } catch (error) {
       alert(error.error_description || error.message);
     }
@@ -32,9 +63,14 @@ export default function MainTimelineColumn({ user, session }) {
             value={tweet}
             onChange={(e) => setTweet(e.target.value)}
           />
+          {image && (
+            <div className="flex h-3/5 w-3/5">
+              <Image src={URL.createObjectURL(image)} alt="" width={300} height={300} />
+            </div>
+          )}
           <div className="my-2 flex items-center justify-between">
             <div className="flex items-center justify-between">
-              <ActionButton buttonNumber={15} />
+              <ActionButton buttonNumber={15} image={image} setImage={setImage} />
               <ActionButton buttonNumber={16} />
               <ActionButton buttonNumber={17} />
               <ActionButton buttonNumber={18} />
