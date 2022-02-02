@@ -2,9 +2,11 @@ import NavItem from "../components/NavItem";
 import Image from "next/image";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/router";
+import { useState, useRef } from "react";
 
 export default function Navigation({ user }) {
   const router = useRouter();
+  const avatarRef = useRef();
   async function logout() {
     const { error } = await supabase.auth.signOut();
     if (!error) {
@@ -12,6 +14,25 @@ export default function Navigation({ user }) {
       router.push("/");
     }
   }
+  const changeAvatar = async (image) => {
+    const file = image;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+    try {
+      const { data, error } = await supabase.storage.from("avatars").upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (error) throw error;
+      const { publicURL, error: urlError } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      if (urlError) throw urlError;
+      const { profile, error: updateError } = await supabase.from("profiles").update({ avatar: publicURL }).eq("id", user.id);
+      if (updateError) throw updateError;
+    } catch (error) {
+      alert(error.error_description || error.message);
+    }
+  };
   return (
     <div className="col-span-3 flex h-screen flex-col items-start justify-between bg-black pl-4 pt-4 lg:pl-40 lg:pt-6">
       <div className="w-full">
@@ -30,9 +51,10 @@ export default function Navigation({ user }) {
           </button>
         </div>
       </div>
-      <div className="mb-4 flex w-full items-center justify-between rounded-2xl py-2 pr-4 transition duration-200 ease-in hover:bg-slate-800 ">
+      <div className="mb-4 flex w-full cursor-pointer items-center justify-between rounded-2xl py-2 pr-4 transition duration-200 ease-in hover:bg-slate-800">
         <div className="flex w-full items-center">
-          <Image src={user.avatar} alt="" width="40" height="40" className="rounded-full" />
+          <Image src={user.avatar} alt="" width="40" height="40" className="rounded-full" onClick={() => avatarRef.current.click()} />
+          <input type="file" ref={avatarRef} className="hidden" onChange={(e) => changeAvatar(e.target.files[0])} />
           <div className="mx-2 flex w-2/3 flex-col text-white">
             <p>{user.display_name}</p>
             <p className="truncate text-sm text-gray-500">{`@${user.username}`}</p>

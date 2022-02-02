@@ -89,7 +89,6 @@ export default function MainTimelineColumn({ user, session }) {
         </div>
       </div>
       <Timeline user={user} />
-      <p className="my-3 text-center text-gray-400">No more tweets to show</p>
     </div>
   );
 }

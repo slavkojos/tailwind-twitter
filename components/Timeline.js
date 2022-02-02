@@ -42,6 +42,7 @@ export default function Timeline({ user }) {
   return (
     <div className="flex flex-col overflow-auto">
       {posts && posts.map((post) => <TweetItem key={post.id} post={post} profile={post.profile} user={user} />)}
+      <p className="my-3 text-center text-gray-400">No more tweets to show</p>
     </div>
   );
 }

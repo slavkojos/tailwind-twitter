@@ -2,12 +2,9 @@ import Image from "next/image";
 import { useRef } from "react";
 export default function ActionButton({ buttonNumber, image, setImage }) {
   const fileInputRef = useRef(null);
-  const addImageToTweet = () => {
-    fileInputRef.current.click();
-  };
   const triggerAction = () => {
     if (buttonNumber === 15) {
-      addImageToTweet();
+      fileInputRef.current.click();
     }
   };
 
