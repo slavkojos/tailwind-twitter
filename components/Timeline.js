@@ -1,16 +1,34 @@
 import { supabase } from "../utils/supabase";
 import TweetItem from "./TweetItem";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { post } from "@supabase/gotrue-js/dist/main/lib/fetch";
 export default function Timeline({ user }) {
-  const [posts, setPosts] = useState();
+  const [posts, setPosts] = useState([]);
+
+  const updateLikes = (payload) => {
+    if (payload.eventType === "DELETE") {
+      setPosts((existingPosts) => {
+        const postIndex = existingPosts.findIndex((post) => post.id === payload.old.post_id);
+        const updatedLikes = existingPosts[postIndex].likes.filter((like) => like.id !== payload.old.id);
+        delete existingPosts[postIndex].likes;
+        existingPosts[postIndex].likes = updatedLikes;
+        return [...existingPosts];
+      });
+    }
+    if (payload.eventType === "INSERT") {
+      setPosts((existingPosts) => {
+        const updatedPosts = existingPosts.map((post) => {
+          if (post.id === payload.new.post_id) post.likes.push(payload.new);
+          return post;
+        });
+        return [...updatedPosts];
+      });
+    }
+  };
+
   const fetchFollowers = async () => {
     try {
-      //let { data: posts, error } = await supabase.from("posts").select("*").eq("user_id", user.id).orderBy("created_at", "desc");
       let { data: followers, error } = await supabase.from("followers").select("following_id").eq("user_id", user.id);
-
-      //if (error) throw new Error(error);
-      console.log(followers);
-
       if (error) throw error;
       followers.push({ following_id: user.id });
       fetchPosts(followers);
@@ -20,6 +38,7 @@ export default function Timeline({ user }) {
   };
 
   const fetchPosts = async (followers) => {
+    console.log("fetching posts");
     try {
       let { data: posts, error } = await supabase
         .from("posts")
@@ -38,7 +57,28 @@ export default function Timeline({ user }) {
   };
   useEffect(() => {
     fetchFollowers();
+    const postsSubscription = supabase
+      .from("posts")
+      .on("INSERT", (payload) => {
+        fetchPosts(following);
+      })
+      .subscribe();
+    const likesSubscription = supabase
+      .from("likes")
+      .on("INSERT", (payload) => {
+        updateLikes(payload);
+      })
+      .on("DELETE", (payload) => {
+        updateLikes(payload);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeSubscription(postsSubscription);
+      supabase.removeSubscription(likesSubscription);
+    };
   }, []);
+
   return (
     <div className="flex flex-col overflow-auto">
       {posts && posts.map((post) => <TweetItem key={post.id} post={post} profile={post.profile} user={user} />)}

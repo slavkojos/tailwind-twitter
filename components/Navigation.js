@@ -3,13 +3,17 @@ import Image from "next/image";
 import { supabase } from "../utils/supabase";
 import { useRouter } from "next/router";
 import { useState, useRef } from "react";
+import Spinner from "../public/assets/spinner.svg";
 
 export default function Navigation({ user }) {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const avatarRef = useRef();
   async function logout() {
+    setLoading(true);
     const { error } = await supabase.auth.signOut();
     if (!error) {
+      setLoading(false);
       console.log("logged out");
       router.push("/");
     }
@@ -60,9 +64,13 @@ export default function Navigation({ user }) {
             <p className="truncate text-sm text-gray-500">{`@${user.username}`}</p>
           </div>
         </div>
-        <button className="flex rounded-full" onClick={logout}>
-          <Image src="/assets/logout_white.svg" alt="" width="32" height="32" className="" />
-        </button>
+        {loading ? (
+          <Spinner className="animate-spin" />
+        ) : (
+          <button className="flex rounded-full" onClick={logout}>
+            <Image src="/assets/logout_white.svg" alt="" width="32" height="32" className="" />
+          </button>
+        )}
       </div>
     </div>
   );

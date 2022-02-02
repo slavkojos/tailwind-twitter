@@ -5,7 +5,7 @@ import { supabase } from "../utils/supabase";
 import { formatDistanceToNowStrict } from "date-fns";
 export default function TweetItem({ post, profile, user }) {
   return (
-    <div className="flex w-full items-start border-t-[.005px] border-b-[.005px] border-gray-600 p-3 text-white">
+    <div className="flex w-full items-start border-t-[0.0000001px]  border-gray-700 p-3 text-white">
       <div className="mr-3">
         <Image alt="" src={profile.avatar} width="64" height="64" className="rounded-full" />
       </div>
@@ -27,9 +27,23 @@ export default function TweetItem({ post, profile, user }) {
             <Image alt="" src={post.media} width={300} height={300} />
           </div>
         )}
-        <div className="my-2 flex w-3/4 justify-between">
-          <TweetActionButton buttonNumber={22} number={1} hoverColor="hover:stroke-sky-500" textHoverColor="hover:text-sky-500" icon="reply" />
-          <TweetActionButton buttonNumber={23} number={2} hoverColor="hover:stroke-green-600" textHoverColor="hover:text-green-500" icon="retweet" />
+        <div className="mt-4 mb-1 flex w-3/4 justify-between">
+          <TweetActionButton
+            buttonNumber={22}
+            number={1}
+            hoverColor="hover:stroke-sky-500"
+            textHoverColor="hover:text-sky-500"
+            icon="reply"
+            count={0}
+          />
+          <TweetActionButton
+            buttonNumber={23}
+            number={2}
+            hoverColor="hover:stroke-green-600"
+            textHoverColor="hover:text-green-500"
+            icon="retweet"
+            count={0}
+          />
           <TweetActionButton
             buttonNumber={24}
             number={3}
@@ -41,7 +55,14 @@ export default function TweetItem({ post, profile, user }) {
             likes={post.likes}
             count={post.likes.length}
           />
-          <TweetActionButton buttonNumber={25} number="" hoverColor="hover:stroke-sky-500" textHoverColor="hover:text-sky-500" icon="share" />
+          <TweetActionButton
+            buttonNumber={25}
+            number=""
+            hoverColor="hover:stroke-sky-500"
+            textHoverColor="hover:text-sky-500"
+            icon="share"
+            count={0}
+          />
         </div>
       </div>
     </div>

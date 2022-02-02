@@ -2,19 +2,28 @@ import Image from "next/image";
 import Reply from "../public/assets/svgexport-22.svg";
 import TweetActionIcon from "./TweetActionIcon";
 import { supabase } from "../utils/supabase";
-import { useState, useEffect } from "react";
-export default function TweetActionButton({ number, hoverColor, icon, textHoverColor, postID, user, likes, count }) {
+import { useState, useEffect, useCallback } from "react";
+export default function TweetActionButton({ number, hoverColor, icon, textHoverColor, postID, user, count, likes }) {
   const [counter, setCounter] = useState(count);
   const [liked, setLiked] = useState(false);
   const checkIfUserHasLiked = () => {
-    if (likes) {
+    if (icon === "like") {
       const check = likes.some((like) => like.user_id === user.id);
       check ? setLiked(true) : setLiked(false);
     }
   };
   useEffect(() => {
-    checkIfUserHasLiked();
+    //console.log("likes in useEffect", likes);
+    if (icon === "like") checkIfUserHasLiked();
   }, []);
+
+  useEffect(() => {
+    setCounter(count);
+  }, [count]);
+  // const callback = useCallback(() => {
+  //   console.log("setting counter");
+  //   setCounter(count);
+  // }, [count]);
   const triggerTweetAction = async () => {
     if (icon === "like") {
       if (liked === false) {
@@ -39,9 +48,9 @@ export default function TweetActionButton({ number, hoverColor, icon, textHoverC
     }
   };
   return (
-    <button className={`flex items-center rounded-full pr-2 text-gray-500 ${hoverColor} ${textHoverColor}`} onClick={triggerTweetAction}>
+    <button className={`flex items-center rounded-full pr-2 text-gray-500  ${hoverColor} ${textHoverColor}`} onClick={triggerTweetAction}>
       <TweetActionIcon icon={icon} hoverColor={hoverColor} />
-      <span className="mx-2">{counter}</span>
+      {icon === "like" && <span className="mx-2">{counter}</span>}
     </button>
   );
 }
