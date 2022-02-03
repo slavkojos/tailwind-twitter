@@ -20,37 +20,39 @@ export default function TweetActionButton({ number, hoverColor, icon, textHoverC
   useEffect(() => {
     setCounter(count);
   }, [count]);
-  // const callback = useCallback(() => {
-  //   console.log("setting counter");
-  //   setCounter(count);
-  // }, [count]);
-  const triggerTweetAction = async () => {
-    if (icon === "like") {
-      if (liked === false) {
-        try {
-          const { data, error } = await supabase.from("likes").insert([{ post_id: postID, user_id: user.id }]);
-          if (error) throw error;
-          setCounter((prevCount) => prevCount + 1);
-          setLiked(true);
-        } catch (error) {
-          console.error(error.error_description || error.message);
-        }
-      } else {
-        try {
-          const { data, error } = await supabase.from("likes").delete().eq("user_id", user.id).eq("post_id", postID);
-          if (error) throw error;
-          setCounter((prevCount) => prevCount - 1);
-          setLiked(false);
-        } catch (error) {
-          console.error(error.error_description || error.message);
-        }
+  const triggerLike = async () => {
+    if (liked === false) {
+      try {
+        const { data, error } = await supabase.from("likes").insert([{ post_id: postID, user_id: user.id }]);
+        if (error) throw error;
+        setCounter((prevCount) => prevCount + 1);
+        setLiked(true);
+      } catch (error) {
+        console.error(error.error_description || error.message);
+      }
+    } else {
+      try {
+        const { data, error } = await supabase.from("likes").delete().eq("user_id", user.id).eq("post_id", postID);
+        if (error) throw error;
+        setCounter((prevCount) => prevCount - 1);
+        setLiked(false);
+      } catch (error) {
+        console.error(error.error_description || error.message);
       }
     }
   };
+  if (icon === "like") {
+    return (
+      <button className={`flex items-center rounded-full pr-2 text-gray-500  ${hoverColor} ${textHoverColor}`} onClick={triggerLike}>
+        {liked ? <TweetActionIcon icon={"liked"} hoverColor={hoverColor} /> : <TweetActionIcon icon={"like"} hoverColor={hoverColor} />}
+        <span className="mx-2">{counter}</span>
+      </button>
+    );
+  }
   return (
-    <button className={`flex items-center rounded-full pr-2 text-gray-500  ${hoverColor} ${textHoverColor}`} onClick={triggerTweetAction}>
+    <button className={`flex items-center rounded-full pr-2 text-gray-500  ${hoverColor} ${textHoverColor}`}>
       <TweetActionIcon icon={icon} hoverColor={hoverColor} />
-      {icon === "like" && <span className="mx-2">{counter}</span>}
+      {icon === "like" && <span className="mx-2">0</span>}
     </button>
   );
 }
