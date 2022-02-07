@@ -10,6 +10,10 @@ export default function Landing() {
   const [isSignInOpen, setSignInOpen] = useState(false);
   return (
     <div className="mx-auto flex h-screen flex-col-reverse items-stretch justify-between bg-black lg:flex-row">
+      <Head>
+        <title>Twitter. It's what's happening / Twitter</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <div className="flex w-full basis-3/5 justify-center bg-landing-image">
         <Image src="/assets/svgexport-3.svg" alt="" width="400" height="400" className="fill-white" />
       </div>

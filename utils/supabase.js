@@ -73,3 +73,38 @@ export async function addNewProfile(user) {
     console.error(error.error_description || error.message);
   }
 }
+
+export async function fetchProfileFromUsername(username) {
+  console.log("username: " + username);
+  try {
+    let { data: profiles, error } = await supabase.from("profiles").select("*").eq("username", username);
+    if (error) throw error;
+    if (profiles.length > 0) {
+      return profiles[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error(error.error_description || error.message);
+  }
+}
+
+export async function fetchFollowingList(userID) {
+  try {
+    let { data: profiles, error } = await supabase.from("followers").select("*").eq("user_id", userID);
+    if (error) throw error;
+    return profiles;
+  } catch (error) {
+    console.error(error.error_description || error.message);
+  }
+}
+
+export async function fetchFollowersList(userID) {
+  try {
+    let { data: profiles, error } = await supabase.from("followers").select("*").eq("following_id", userID);
+    if (error) throw error;
+    return profiles;
+  } catch (error) {
+    console.error(error.error_description || error.message);
+  }
+}

@@ -3,39 +3,10 @@ import Head from "next/head";
 import Navigation from "../components/Navigation";
 import ThirdColumn from "../components/ThirdColumn";
 import MainTimelineColumn from "../components/MainTimelineColumn";
-import { supabase, checkIfProfileExists, addNewProfile } from "../utils/supabase";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 
-export default function Home({ session }) {
-  const [loggedInUser, setLoggedInUser] = useState();
-  const router = useRouter();
-
-  useEffect(() => {
-    getLoggedInUser();
-    return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function getLoggedInUser() {
-    const { data, error } = await supabase.auth.getSessionFromUrl();
-    const session = data || supabase.auth.session();
-    if (!session) {
-      console.log(session);
-      router.push("/");
-    } else {
-      console.log(session);
-
-      const existingProfile = await checkIfProfileExists(session.user);
-      console.log("existingProfile[0]", existingProfile[0]);
-      setLoggedInUser(existingProfile[0]);
-      if (existingProfile.length === 0) {
-        console.log("adding new profile");
-        const profile = addNewProfile(session.user);
-        setLoggedInUser(profile);
-      }
-    }
-  }
+export default function Home({ session, loggedInUser }) {
   return (
     <div className="container mx-auto grid h-screen grid-cols-12 overflow-hidden bg-black">
       <Head>

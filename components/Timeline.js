@@ -1,28 +1,25 @@
 import { supabase } from "../utils/supabase";
 import TweetItem from "./TweetItem";
 import { useEffect, useState } from "react";
+import Spinner from "../public/assets/Rolling-1s-200px.svg";
 export default function Timeline({ user }) {
   const [posts, setPosts] = useState([]);
-  const [following, setFollowing] = useState("");
+  const [loading, setLoading] = useState(false);
+  const following = [];
   const updateLikes = (payload) => {
     if (payload.eventType === "DELETE") {
-      console.log("payload", payload);
       setPosts((existingPosts) => {
         const postIndex = existingPosts.findIndex((post) => post.id === payload.old.post_id);
         const updatedLikes = existingPosts[postIndex].likes.filter((like) => like.id !== payload.old.id);
-        console.log("updatedLikes", updatedLikes);
         delete existingPosts[postIndex].likes;
         existingPosts[postIndex].likes = updatedLikes;
-        console.log(existingPosts);
         return [...existingPosts];
       });
     }
     if (payload.eventType === "INSERT") {
-      console.log(payload);
       setPosts((existingPosts) => {
         const updatedPosts = existingPosts.map((post) => {
           if (post.id === payload.new.post_id) {
-            console.log("pushing new like");
             post.likes.push(payload.new);
           }
           return post;
@@ -38,7 +35,7 @@ export default function Timeline({ user }) {
       let { data: followers, error } = await supabase.from("followers").select("following_id").eq("user_id", user.id);
       if (error) throw error;
       followers.push({ following_id: user.id });
-      setFollowing(followers);
+      following = followers;
       fetchPosts(followers);
     } catch (error) {
       console.error(error.error_description || error.message);
@@ -49,7 +46,7 @@ export default function Timeline({ user }) {
     try {
       let { data: posts, error } = await supabase
         .from("posts")
-        .select("*,profile:posts_user_id_fkey!inner(*),likes:likes_post_id_fkey(*)")
+        .select("*,profile:posts_user_id_fkey!inner(*),likes:likes_post_id_fkey(*),replies:replies_post_id_fkey(*)")
         .in(
           "user_id",
           followers.map((follower) => follower.following_id)
@@ -58,11 +55,15 @@ export default function Timeline({ user }) {
       if (error) throw error;
       console.log("Posts", posts);
       setPosts(posts);
+      setLoading(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
+    setLoading(true);
     fetchFollowers();
     const postsSubscription = supabase
       .from("posts")
@@ -87,9 +88,18 @@ export default function Timeline({ user }) {
   }, []);
 
   return (
-    <div className="flex flex-col overflow-auto">
-      {posts && posts.map((post) => <TweetItem key={post.id} post={post} profile={post.profile} user={user} />)}
-      <p className="my-3 text-center text-gray-400">No more tweets to show</p>
+    <div className="flex flex-col items-center overflow-auto">
+      {loading ? (
+        <Spinner className="h-1/3 w-1/3" />
+      ) : (
+        <div className="w-full">
+          {posts.map((post) => (
+            <TweetItem key={post.id} post={post} profile={post.profile} user={user} />
+          ))}
+          <p className="my-3 text-center text-gray-400">No more tweets to show</p>
+        </div>
+      )}
+      )
     </div>
   );
 }

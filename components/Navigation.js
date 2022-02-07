@@ -10,12 +10,17 @@ export default function Navigation({ user }) {
   const router = useRouter();
   const avatarRef = useRef();
   async function logout() {
-    setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       setLoading(false);
       console.log("logged out");
       router.push("/");
+    } catch (error) {
+      console.error(error.error_description || error.message);
+    } finally {
+      setLoading(false);
     }
   }
   const changeAvatar = async (image) => {
@@ -42,14 +47,14 @@ export default function Navigation({ user }) {
       <div className="w-full">
         <Image src="/assets/svgexport-3.svg" alt="" width="32" height="32" className="fill-white p-0" />
         <div className="my-4 w-full pr-4">
-          <NavItem imageNumber={4} name="Home" />
-          <NavItem imageNumber={5} name="Explore" />
-          <NavItem imageNumber={6} name="Notifications" />
-          <NavItem imageNumber={7} name="Messages" />
-          <NavItem imageNumber={8} name="Bookmarks" />
-          <NavItem imageNumber={9} name="Lists" />
-          <NavItem imageNumber={10} name="Profile" />
-          <NavItem imageNumber={11} name="More" />
+          <NavItem imageNumber={4} name="Home" destination="home" />
+          <NavItem imageNumber={5} name="Explore" destination="home" />
+          <NavItem imageNumber={6} name="Notifications" destination="home" />
+          <NavItem imageNumber={7} name="Messages" destination="home" />
+          <NavItem imageNumber={8} name="Bookmarks" destination="home" />
+          <NavItem imageNumber={9} name="Lists" destination="home" />
+          <NavItem imageNumber={10} name="Profile" destination={user.username} />
+          <NavItem imageNumber={11} name="More" destination="home" />
           <button className="mt-4 w-full rounded-3xl bg-sky-500 p-2 py-3 font-semibold text-white transition duration-200 ease-in hover:bg-sky-600">
             Tweet
           </button>
@@ -65,7 +70,7 @@ export default function Navigation({ user }) {
           </div>
         </div>
         {loading ? (
-          <Spinner className="animate-spin" />
+          <Spinner className="animate-spin fill-white" />
         ) : (
           <button className="flex rounded-full" onClick={logout}>
             <Image src="/assets/logout_white.svg" alt="" width="32" height="32" className="" />
