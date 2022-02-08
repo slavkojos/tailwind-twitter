@@ -7,7 +7,15 @@ export default function ThirdColumn({ title, user }) {
     try {
       let { data: profiles, error } = await supabase.from("profiles").select("*").neq("id", user.id);
       if (error) throw error;
-      setProfilesToFollow(profiles);
+      let { data: following, error: followingError } = await supabase.from("followers").select("following_id").eq("user_id", user.id);
+      if (followingError) throw followingError;
+      const profilesWithFollowingStatus = profiles.map((profile) => {
+        const isFollowing = following.some((following) => following.following_id === profile.id);
+        isFollowing ? (profile.followStatus = true) : (profile.followStatus = false);
+        return profile;
+      });
+      console.log(profilesWithFollowingStatus);
+      setProfilesToFollow(profilesWithFollowingStatus);
     } catch (error) {
       console.error(error.error_description || error.message);
     }
@@ -28,7 +36,7 @@ export default function ThirdColumn({ title, user }) {
                 name={profile.display_name}
                 username={profile.username}
                 avatar={profile.avatar}
-                followStatus={profile.followStatus}
+                followingStatus={profile.followStatus}
                 userID={profile.id}
                 user={user}
               />

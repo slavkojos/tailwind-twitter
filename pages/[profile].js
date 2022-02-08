@@ -22,12 +22,14 @@ export default function Profile({ session, loggedInUser }) {
 
   const fetchData = async (profile) => {
     const user = await fetchProfileFromUsername(profile);
+    console.log("user,2", user);
     const following = await fetchFollowingList(user.id);
     const followers = await fetchFollowersList(user.id);
     setProfileData(user);
     setFollowing(following);
     setFollowers(followers);
     if (user) {
+      console.log("user: " + user);
       fetchPosts(user.id);
     }
   };
@@ -57,9 +59,7 @@ export default function Profile({ session, loggedInUser }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {loggedInUser && <Navigation className="" user={loggedInUser} />}
-      {loading === false && (
-        <MainProfileColumn profile={profileData} posts={posts} user={loggedInUser} loading={loading} following={following} followers={followers} />
-      )}
+      <MainProfileColumn profile={profileData} posts={posts} user={loggedInUser} loading={loading} following={following} followers={followers} />
       <div className="col-span-3 flex h-screen flex-col bg-black p-3 px-4">
         <div className="relative mb-4">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
