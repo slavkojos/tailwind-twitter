@@ -21,12 +21,15 @@ export default function TweetItem({ post, profile, user }) {
             <Image alt="" src="/assets/svgexport-31.svg" width="16" height="16" />
           </button>
         </div>
-        <p>{post.content}</p>
-        {post.media && (
-          <div className="">
-            <Image alt="" src={post.media} width={300} height={300} />
-          </div>
-        )}
+        <div>
+          <p>{post.content}</p>
+          {post.media && (
+            <div className="relative my-3 h-[30rem] w-11/12">
+              <Image alt="" src={post.media} layout="fill" className="h-fit rounded-md" />
+            </div>
+          )}
+        </div>
+
         <div className="mt-4 mb-1 flex w-3/4 justify-between">
           <TweetActionButton
             buttonNumber={22}
