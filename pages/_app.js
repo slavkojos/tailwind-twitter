@@ -15,7 +15,8 @@ function MyApp({ Component, pageProps }) {
         console.log("signed in");
       }
       if (event == "SIGNED_OUT") {
-        console.log("signo out");
+        console.log("sign out");
+        setLoggedInUser(null);
       }
     });
 
@@ -23,10 +24,11 @@ function MyApp({ Component, pageProps }) {
       authListener.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [router]);
   const getSession = async () => {
     const { data, error } = await supabase.auth.getSessionFromUrl();
     const session = data || supabase.auth.session();
+    console.log("session: ", session);
     if (session) {
       console.log("session valid", session);
       getLoggedInUser(session);
@@ -41,7 +43,7 @@ function MyApp({ Component, pageProps }) {
       setLoggedInUser(existingProfile[0]);
       if (existingProfile.length === 0) {
         console.log("adding new profile");
-        const profile = addNewProfile(session.user);
+        const profile = await addNewProfile(session.user);
         setLoggedInUser(profile);
       }
     }
