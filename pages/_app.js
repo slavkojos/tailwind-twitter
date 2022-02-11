@@ -5,17 +5,20 @@ import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const [session, setSession] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState();
+  //const [session, setSession] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
   useEffect(() => {
     console.log("useeffect in app.js");
     getSession();
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event == "SIGNED_IN") {
-        setSession(session);
+        console.log("signed in");
+      }
+      if (event == "SIGNED_OUT") {
+        console.log("signo out");
       }
     });
-    getLoggedInUser();
+
     return () => {
       authListener.unsubscribe();
     };
@@ -24,13 +27,13 @@ function MyApp({ Component, pageProps }) {
   const getSession = async () => {
     const { data, error } = await supabase.auth.getSessionFromUrl();
     const session = data || supabase.auth.session();
-    setSession(session);
+    if (session) {
+      console.log("session valid", session);
+      getLoggedInUser(session);
+    }
   };
-  async function getLoggedInUser() {
-    const { data, error } = await supabase.auth.getSessionFromUrl();
-    const session = data || supabase.auth.session();
+  async function getLoggedInUser(session) {
     if (!session) {
-      console.log(session);
       router.push("/");
     } else {
       const existingProfile = await checkIfProfileExists(session.user);
@@ -43,6 +46,6 @@ function MyApp({ Component, pageProps }) {
       }
     }
   }
-  return <Component {...pageProps} session={session} loggedInUser={loggedInUser} />;
+  return <Component {...pageProps} loggedInUser={loggedInUser} />;
 }
 export default MyApp;

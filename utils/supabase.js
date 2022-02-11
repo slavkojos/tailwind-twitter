@@ -91,20 +91,31 @@ export async function fetchProfileFromUsername(username) {
 
 export async function fetchFollowingList(userID) {
   try {
-    let { data: profiles, error } = await supabase.from("followers").select("*").eq("user_id", userID);
+    //let { data: profiles, error } = await supabase.from("followers").select("*").eq("user_id", userID);
+    let { data: profiles, error } = await supabase.from("followers").select("*").or(`user_id.eq.${userID},following_id.eq.${userID}`);
+    console.log("profiles fetchFollwoing list", profiles);
     if (error) throw error;
-    return profiles;
+    const following = [];
+    const followers = [];
+    profiles.forEach((profile) => {
+      if (profile.user_id === userID) {
+        following.push(profile);
+      } else if (profile.following_id === userID) {
+        followers.push(profile);
+      }
+    });
+    return { following, followers };
   } catch (error) {
     console.error(error.error_description || error.message);
   }
 }
 
-export async function fetchFollowersList(userID) {
-  try {
-    let { data: profiles, error } = await supabase.from("followers").select("*").eq("following_id", userID);
-    if (error) throw error;
-    return profiles;
-  } catch (error) {
-    console.error(error.error_description || error.message);
-  }
-}
+// export async function fetchFollowersList(userID) {
+//   try {
+//     let { data: profiles, error } = await supabase.from("followers").select("*").eq("following_id", userID);
+//     if (error) throw error;
+//     return profiles;
+//   } catch (error) {
+//     console.error(error.error_description || error.message);
+//   }
+// }

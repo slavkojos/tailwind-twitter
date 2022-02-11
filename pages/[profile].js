@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import Navigation from "../components/Navigation";
 import ThirdColumn from "../components/ThirdColumn";
-import { supabase, fetchProfileFromUsername, fetchFollowingList, fetchFollowersList } from "../utils/supabase";
+import { supabase, fetchProfileFromUsername, fetchFollowingList } from "../utils/supabase";
 import { useState, useEffect } from "react";
 import MainProfileColumn from "../components/MainProfileColumn";
 
@@ -22,15 +22,14 @@ export default function Profile({ session, loggedInUser }) {
 
   const fetchData = async (profile) => {
     const user = await fetchProfileFromUsername(profile);
-    console.log("user,2", user);
-    const following = await fetchFollowingList(user.id);
-    const followers = await fetchFollowersList(user.id);
-    setProfileData(user);
-    setFollowing(following);
-    setFollowers(followers);
     if (user) {
-      console.log("user: " + user);
+      const { following, followers } = await fetchFollowingList(user.id);
+      setProfileData(user);
+      setFollowing(following);
+      setFollowers(followers);
       fetchPosts(user.id);
+    } else {
+      alert("User not found");
     }
   };
 

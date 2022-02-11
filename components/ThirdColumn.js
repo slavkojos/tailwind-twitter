@@ -5,9 +5,9 @@ export default function ThirdColumn({ title, user }) {
   const [profilesToFollow, setProfilesToFollow] = useState([]);
   const fetchProfiles = async () => {
     try {
-      let { data: profiles, error } = await supabase.from("profiles").select("*").neq("id", user.id);
+      let { data: profiles, error } = await supabase.from("profiles").select("*").neq("id", user.id); //gets all profiles except logged in user
       if (error) throw error;
-      let { data: following, error: followingError } = await supabase.from("followers").select("following_id").eq("user_id", user.id);
+      let { data: following, error: followingError } = await supabase.from("followers").select("following_id").eq("user_id", user.id); //gets a list of id's of profiles the logged in user is following
       if (followingError) throw followingError;
       const profilesWithFollowingStatus = profiles.map((profile) => {
         const isFollowing = following.some((following) => following.following_id === profile.id);

@@ -11,12 +11,9 @@ export default function SignIn({ isSignInOpen, setSignInOpen, cancelButtonRef })
     try {
       setLoading(true);
       const { user, session, error } = await supabase.auth.signIn({ email, password });
-      if (error) {
-        throw error;
-      } else {
-        console.log("user in else", user);
-        router.push("/home");
-      }
+      if (error) throw error;
+      console.log("user in else", user);
+      router.push("/home");
     } catch (error) {
       alert(error.error_description || error.message);
     } finally {

@@ -15,6 +15,8 @@ export default function UserSmall({ name, username, avatar, followingStatus, use
       setLoading(false);
     } catch (error) {
       console.error(error.error_description || error.message);
+    } finally {
+      setLoading(false);
     }
   };
   const unfollowUser = async () => {
@@ -26,6 +28,8 @@ export default function UserSmall({ name, username, avatar, followingStatus, use
       setLoading(false);
     } catch (error) {
       console.error(error.error_description || error.message);
+    } finally {
+      setLoading(false);
     }
   };
   return (
