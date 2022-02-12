@@ -60,7 +60,7 @@ export default function Navigation({ user }) {
           </button>
         </div>
       </div>
-      <div className="mb-4 flex w-full cursor-pointer items-center justify-between rounded-2xl py-2 pr-4 transition duration-200 ease-in hover:bg-slate-800">
+      <div className="mb-4 flex w-full cursor-pointer items-center justify-between rounded-2xl py-2 pr-4 transition duration-200 ease-in hover:bg-gray-900">
         <div className="flex w-full items-center">
           <Image src={user.avatar} alt="" width="40" height="40" className="rounded-full" onClick={() => avatarRef.current.click()} />
           <input type="file" ref={avatarRef} className="hidden" onChange={(e) => changeAvatar(e.target.files[0])} />

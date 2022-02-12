@@ -44,11 +44,11 @@ export async function signInWithOauth(provider) {
   }
 }
 
-export async function checkIfProfileExists(user) {
+export async function fetchProfileFromID(id) {
   try {
-    let { data: profiles, error } = await supabase.from("profiles").select("*").eq("id", user.id);
+    let { data: profiles, error } = await supabase.from("profiles").select("*").eq("id", id);
     if (error) throw error;
-    return profiles;
+    return profiles[0];
   } catch (error) {
     console.error(error.error_description || error.message);
   }
@@ -91,7 +91,6 @@ export async function fetchFollowingList(userID) {
   try {
     //let { data: profiles, error } = await supabase.from("followers").select("*").eq("user_id", userID);
     let { data: profiles, error } = await supabase.from("followers").select("*").or(`user_id.eq.${userID},following_id.eq.${userID}`);
-    console.log("profiles fetchFollwoing list", profiles);
     if (error) throw error;
     const following = [];
     const followers = [];

@@ -1,14 +1,13 @@
 import "../styles/globals.css";
 import { useEffect, useState, useRef } from "react";
-import { supabase, checkIfProfileExists, addNewProfile } from "../utils/supabase";
+import { supabase, fetchProfileFromID } from "../utils/supabase";
 import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  //const [session, setSession] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
   useEffect(() => {
-    console.log("useeffect in app.js");
+    console.log(router);
     getSession();
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event == "SIGNED_IN") {
@@ -24,23 +23,30 @@ function MyApp({ Component, pageProps }) {
       authListener.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [Component]);
   const getSession = async () => {
-    const { data, error } = await supabase.auth.getSessionFromUrl();
-    const session = data || supabase.auth.session();
-    console.log("session: ", session);
-    if (session) {
-      console.log("session valid", session);
-      getLoggedInUser(session);
+    try {
+      let session;
+      const { data, error } = await supabase.auth.getSessionFromUrl();
+      if (error) {
+        session = supabase.auth.session();
+      } else {
+        session = data;
+      }
+      console.log("session: ", session);
+      if (session) {
+        console.log("session valid", session);
+        const currentUser = await fetchProfileFromID(session.user.id);
+        setLoggedInUser(currentUser);
+      } else {
+        setLoggedInUser(null);
+        router.push("/");
+      }
+    } catch (error) {
+      console.error(error.error_description || error.message);
     }
   };
-  async function getLoggedInUser(session) {
-    if (!session) {
-      router.push("/");
-    } else {
-      setLoggedInUser(session.user);
-    }
-  }
+
   return <Component {...pageProps} loggedInUser={loggedInUser} />;
 }
 export default MyApp;
