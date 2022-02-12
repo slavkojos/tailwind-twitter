@@ -38,14 +38,7 @@ function MyApp({ Component, pageProps }) {
     if (!session) {
       router.push("/");
     } else {
-      const existingProfile = await checkIfProfileExists(session.user);
-      console.log("existingProfile[0]", existingProfile[0]);
-      setLoggedInUser(existingProfile[0]);
-      if (existingProfile.length === 0) {
-        console.log("adding new profile");
-        const profile = await addNewProfile(session.user);
-        setLoggedInUser(profile);
-      }
+      setLoggedInUser(session.user);
     }
   }
   return <Component {...pageProps} loggedInUser={loggedInUser} />;
