@@ -29,14 +29,15 @@ function MyApp({ Component, pageProps }) {
       let session;
       const { data, error } = await supabase.auth.getSessionFromUrl();
       if (error) {
+        console.log("error: ", error);
         session = supabase.auth.session();
       } else {
         session = data;
       }
       console.log("session: ", session);
       if (session) {
-        console.log("session valid", session);
         const currentUser = await fetchProfileFromID(session.user.id);
+        console.log("current uiser", currentUser);
         setLoggedInUser(currentUser);
       } else {
         setLoggedInUser(null);

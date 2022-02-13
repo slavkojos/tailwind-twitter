@@ -5,7 +5,7 @@ export const supabase = createClient(
   "https://fhlkhextimngjhecwwrd.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNjQyNTM0MDExLCJleHAiOjE5NTgxMTAwMTF9.MWo9ApnWlJEggdXqLVnFmCTof24xnykyC6GwhP5rNP4"
 );
-
+var _ = require("lodash/core");
 export async function signUp(email, password, username, name) {
   try {
     const { user, session, error } = await supabase.auth.signUp(
@@ -16,7 +16,7 @@ export async function signUp(email, password, username, name) {
       {
         data: {
           name: name,
-          preferred_username: username,
+          sub: username,
           avatar_url: "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png",
         },
       }
@@ -116,3 +116,26 @@ export async function fetchFollowingList(userID) {
 //     console.error(error.error_description || error.message);
 //   }
 // }
+
+export async function fetchMessages(userID) {
+  try {
+    let { data: messages, error } = await supabase
+      .from("conversations")
+      .select("id,created_at,content,media,seen,sender:conversations_sender_id_fkey(*),recipient:conversations_recipient_id_fkey(*)")
+      .or(`sender_id.eq.${userID},recipient_id.eq.${userID}`);
+    if (error) throw error;
+    // const outgoingMessages = messages.map((message) => message.sender.id === userID);
+    // const incomingMessages = messages.map((message) => message.recipient.id === userID);
+    if (messages.length < 1) return messages;
+    const grouped = messages.reduce((groups, message) => {
+      const type = message.recipient.id === userID ? "sender" : "recipient";
+      const group = groups[message[type].id] || [];
+      group.push(message);
+      groups[message[type].id] = group;
+      return groups;
+    }, []);
+    return Object.values(grouped);
+  } catch (error) {
+    console.error(error.error_description || error.message);
+  }
+}

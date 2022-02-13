@@ -50,7 +50,7 @@ export default function Navigation({ user }) {
           <NavItem imageNumber={4} name="Home" destination="home" />
           <NavItem imageNumber={5} name="Explore" destination="home" />
           <NavItem imageNumber={6} name="Notifications" destination="home" />
-          <NavItem imageNumber={7} name="Messages" destination="home" />
+          <NavItem imageNumber={7} name="Messages" destination="messages" />
           <NavItem imageNumber={8} name="Bookmarks" destination="home" />
           <NavItem imageNumber={9} name="Lists" destination="home" />
           <NavItem imageNumber={10} name="Profile" destination={user.username} />
