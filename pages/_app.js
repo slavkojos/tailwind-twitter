@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [messages, setMessages] = useState("");
   useEffect(() => {
     console.log(router);
     getSession();
@@ -18,9 +19,18 @@ function MyApp({ Component, pageProps }) {
         setLoggedInUser(null);
       }
     });
-
+    let inboxSubscription;
+    if (supabase.auth.user()) {
+      inboxSubscription = supabase
+        .from(`conversations:recipient_id=eq.${supabase.auth.user().id}`)
+        .on("INSERT", (payload) => {
+          console.log("inboxSubscription: ", payload);
+        })
+        .subscribe();
+    }
     return () => {
       authListener.unsubscribe();
+      supabase.removeSubscription(inboxSubscription);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Component]);
@@ -48,6 +58,6 @@ function MyApp({ Component, pageProps }) {
     }
   };
 
-  return <Component {...pageProps} loggedInUser={loggedInUser} />;
+  return <Component {...pageProps} loggedInUser={loggedInUser} messages={messages} setMessages={setMessages} />;
 }
 export default MyApp;

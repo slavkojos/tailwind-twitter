@@ -2,12 +2,21 @@ import Settings from "../public/assets/svgexport-34.svg";
 import Compose from "../public/assets/svgexport-35.svg";
 import Spinner from "../public/assets/spinner.svg";
 import MessagesItem from "./MessagesItem";
-export default function MessagesColumn({ messages, setMessages, loading, loggedInUser }) {
+export default function MessagesColumn({ messages, setMessages, loading, loggedInUser, setSelectedConversation }) {
   const displayMessages = () => {
     console.log("messages-column", messages);
     if (messages.length > 0) {
       return messages.map((message, index) => {
-        return <MessagesItem key={index} message={message} setMessages={setMessages} loggedInUser={loggedInUser} />;
+        return (
+          <MessagesItem
+            key={index}
+            index={index}
+            message={message}
+            setMessages={setMessages}
+            loggedInUser={loggedInUser}
+            setSelectedConversation={setSelectedConversation}
+          />
+        );
       });
     } else {
       return (

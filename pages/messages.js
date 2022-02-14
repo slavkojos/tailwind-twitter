@@ -1,12 +1,13 @@
 import Head from "next/head";
 import Navigation from "../components/Navigation";
 import MessagesColumn from "../components/MessagesColumn";
+import ConversationWindow from "../components/ConversationWindow";
 import { supabase, fetchMessages } from "../utils/supabase";
 import { useEffect, useState } from "react";
 
-export default function Messages({ session, loggedInUser }) {
-  const [messages, setMessages] = useState("");
+export default function Messages({ session, loggedInUser, messages, setMessages }) {
   const [loading, setLoading] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useState(null);
   useEffect(() => {
     getMessages();
   }, []);
@@ -26,7 +27,18 @@ export default function Messages({ session, loggedInUser }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {loggedInUser && <Navigation className="" user={loggedInUser} />}
-      {loggedInUser && <MessagesColumn messages={messages} setMessages={setMessages} loading={loading} loggedInUser={loggedInUser} />}
+      {loggedInUser && (
+        <MessagesColumn
+          messages={messages}
+          setMessages={setMessages}
+          loading={loading}
+          loggedInUser={loggedInUser}
+          setSelectedConversation={setSelectedConversation}
+        />
+      )}
+      {loggedInUser && messages && (
+        <ConversationWindow messages={messages} setMessages={setMessages} selectedConversation={selectedConversation} loggedInUser={loggedInUser} />
+      )}
     </div>
   );
 }
