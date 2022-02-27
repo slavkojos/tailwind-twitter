@@ -121,7 +121,7 @@ export async function fetchMessages(userID) {
   try {
     let { data: messages, error } = await supabase
       .from("conversations")
-      .select("id,created_at,content,media,seen,sender:conversations_sender_id_fkey(*),recipient:conversations_recipient_id_fkey(*)")
+      .select("id,send_time,content,media,seen_time,sender:conversations_sender_id_fkey(*),recipient:conversations_recipient_id_fkey(*)")
       .or(`sender_id.eq.${userID},recipient_id.eq.${userID}`);
     if (error) throw error;
     // const outgoingMessages = messages.map((message) => message.sender.id === userID);

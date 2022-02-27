@@ -5,6 +5,7 @@ import ThirdColumn from "../components/ThirdColumn";
 import MainTimelineColumn from "../components/MainTimelineColumn";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Home({ session, loggedInUser }) {
   return (

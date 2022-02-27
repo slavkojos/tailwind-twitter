@@ -2,14 +2,31 @@ import Head from "next/head";
 import Navigation from "../components/Navigation";
 import MessagesColumn from "../components/MessagesColumn";
 import ConversationWindow from "../components/ConversationWindow";
-import { supabase, fetchMessages } from "../utils/supabase";
+import { supabase } from "../utils/supabase";
 import { useEffect, useState } from "react";
-
-export default function Messages({ session, loggedInUser, messages, setMessages }) {
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMessages, handleInboxMessage } from "../store/messagesSlice";
+export default function Messages({ session, loggedInUser }) {
   const [loading, setLoading] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState(null);
+  const dispatch = useDispatch();
+  const { messages } = useSelector((state) => state.messages);
   useEffect(() => {
-    getMessages();
+    dispatch(fetchMessages(supabase.auth.user().id));
+    //getMessages()
+    let inboxSubscription;
+    if (supabase.auth.user()) {
+      inboxSubscription = supabase
+        .from(`conversations:recipient_id=eq.${supabase.auth.user().id}`)
+        .on("INSERT", (payload) => {
+          console.log("event for incomin message", payload.new);
+          dispatch(handleInboxMessage(payload.new));
+        })
+        .subscribe();
+    }
+    return () => {
+      supabase.removeSubscription(inboxSubscription);
+    };
   }, []);
   const getMessages = async () => {
     setLoading(true);
@@ -28,17 +45,9 @@ export default function Messages({ session, loggedInUser, messages, setMessages 
       </Head>
       {loggedInUser && <Navigation className="" user={loggedInUser} />}
       {loggedInUser && (
-        <MessagesColumn
-          messages={messages}
-          setMessages={setMessages}
-          loading={loading}
-          loggedInUser={loggedInUser}
-          setSelectedConversation={setSelectedConversation}
-        />
+        <MessagesColumn messages={messages} loading={loading} loggedInUser={loggedInUser} setSelectedConversation={setSelectedConversation} />
       )}
-      {loggedInUser && messages && (
-        <ConversationWindow messages={messages} setMessages={setMessages} selectedConversation={selectedConversation} loggedInUser={loggedInUser} />
-      )}
+      {loggedInUser && messages && <ConversationWindow messages={messages} selectedConversation={selectedConversation} loggedInUser={loggedInUser} />}
     </div>
   );
 }

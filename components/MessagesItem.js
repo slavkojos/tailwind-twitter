@@ -29,7 +29,7 @@ export default function MessagesItem({ message, setMessages, loggedInUser, setSe
         </div>
       </div>
       <div>
-        <p className="truncate text-sm text-gray-500">{formatDistanceToNowStrict(new Date(message[message.length - 1].created_at))} ago</p>
+        <p className="truncate text-sm text-gray-500">{formatDistanceToNowStrict(new Date(message[message.length - 1].send_time))} ago</p>
       </div>
     </button>
   );
