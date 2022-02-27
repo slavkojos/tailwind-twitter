@@ -7,12 +7,15 @@ import AttachImageIcon from "../public/assets/svgexport-15.svg";
 import AttachGifIcon from "../public/assets/svgexport-16.svg";
 import SendIcon from "../public/assets/svgexport-37.svg";
 import { supabase } from "../utils/supabase";
-export default function ConversationWindow({ selectedConversation, loggedInUser, messages, setMessages }) {
+import { useSelector, useDispatch } from "react-redux";
+import { handleSendMessage } from "../store/messagesSlice";
+export default function ConversationWindow({ selectedConversation, loggedInUser, messages }) {
+  const dispatch = useDispatch();
   useEffect(() => {
     if (selectedConversation !== null) {
       divRef.current.scrollIntoView();
     }
-  }, [selectedConversation]);
+  }, [selectedConversation, messages]);
 
   const [inputMessage, setInputMessage] = useState("");
   const divRef = useRef();
@@ -22,32 +25,6 @@ export default function ConversationWindow({ selectedConversation, loggedInUser,
       return messages[selectedConversation][0].recipient;
     } else {
       return messages[selectedConversation][0].sender;
-    }
-  };
-  const handleSendMessage = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("conversations")
-        .insert([{ sender_id: loggedInUser.id, recipient_id: getRealRecipient().id, content: inputMessage }]);
-      if (error) throw error;
-      //alert("Message sent!");
-      setInputMessage("");
-      const { data: record, error: selectError } = await supabase
-        .from("conversations")
-        .select("id,created_at,content,media,seen,sender:conversations_sender_id_fkey(*),recipient:conversations_recipient_id_fkey(*)")
-        .eq("id", data[0].id);
-      if (selectError) throw new Error(selectError);
-      setMessages((prevState) => {
-        console.log("record", record);
-        const messages = prevState;
-        messages[selectedConversation].push(record[0]);
-        console.log("messages123213", messages);
-        return [...messages];
-      });
-      console.log(divRef);
-      divRef.current.scrollIntoView();
-    } catch (error) {
-      console.error(error.error_description || error.message);
     }
   };
   if (selectedConversation === null) {
@@ -80,9 +57,9 @@ export default function ConversationWindow({ selectedConversation, loggedInUser,
         <div className="flex h-full flex-col overflow-y-auto scroll-smooth bg-black p-3">
           {messages[selectedConversation].map((message, index) => {
             return loggedInUser.id === message.sender.id ? (
-              <OutgoingMessage key={index} content={message.content} timestamp={message.created_at} />
+              <OutgoingMessage key={index} content={message.content} timestamp={message.send_time} />
             ) : (
-              <IncomingMessage key={index} content={message.content} timestamp={message.created_at} avatar={message.sender.avatar} />
+              <IncomingMessage key={index} content={message.content} timestamp={message.send_time} avatar={message.sender.avatar} />
             );
           })}
           <div ref={divRef}></div>
@@ -93,12 +70,25 @@ export default function ConversationWindow({ selectedConversation, loggedInUser,
             <AttachGifIcon className="mx-2" />
           </div>
           <input
+            value={inputMessage}
             type="text"
             className="w-full rounded-2xl bg-black p-2 text-gray-300 "
             placeholder="Start a new message"
             onChange={(e) => setInputMessage(e.target.value)}
           />
-          <button className="mx-2 rounded-full p-2 hover:bg-gray-700" onClick={handleSendMessage}>
+          <button
+            className="mx-2 rounded-full p-2 hover:bg-gray-700"
+            onClick={() =>
+              dispatch(
+                handleSendMessage({
+                  realRecipient: getRealRecipient(),
+                  message: inputMessage,
+                  userID: supabase.auth.user().id,
+                  index: selectedConversation,
+                })
+              )
+            }
+          >
             <SendIcon />
           </button>
         </div>
@@ -106,3 +96,4 @@ export default function ConversationWindow({ selectedConversation, loggedInUser,
     );
   }
 }
+//getRealRecipient(), inputMessage, supabase.auth.user().id, selectedConversation
